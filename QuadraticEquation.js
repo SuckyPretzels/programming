@@ -11,7 +11,7 @@
         while (true) {
             let input = prompt("First number: ");
             
-            if (input() === null) {
+            if (input === null) {
                 console.log("Please insert a valid number.")
                 continue;
             }
@@ -36,7 +36,7 @@
         while (true) {
             let input = prompt("Second number: ")
             
-            if (input() === null) {
+            if (input === null) {
                 console.log("Please insert a valid number.")
                 continue;
             }
@@ -61,7 +61,7 @@
         while (true) {
             let input = prompt("Third number: ")
             
-            if (input() === null) {
+            if (input === null) {
                 console.log("Please insert a valid number.")
                 continue;
             }
