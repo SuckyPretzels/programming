@@ -92,8 +92,8 @@
         }
         
         else {
-            x1 = (-b + Math.sqrt(d)) / 2 * a
-            x2 = (b + Math.sqrt(d)) / 2 * a
+            x1 = (-b + Math.sqrt(d)) / (2 * a)
+            x2 = (-b - Math.sqrt(d)) / (2 * a)
             
             console.log("Delta: " +d);
             console.log("Root 1: " +x1);
@@ -110,7 +110,7 @@
 
  main();  
  
- // a * x**2 - b * x + c = 0
+ // a * x**2 + b * x + c = 0
  // d = b**2 - 4ac
- // X1 = (-b + Math.sqrt(d)) / 2 * a
- // X2 = (+b + Math.sqrt(d)) / 2 * a
+ // X1 = (-b + Math.sqrt(d)) / (2 * a)
+ // X2 = (-b - Math.sqrt(d)) / (2 * a)
