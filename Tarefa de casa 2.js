@@ -1,4 +1,4 @@
-/* 1
+/* Exercício 1
 function main() {
     let width, length, height;
     let area_not_painted, yield;
@@ -156,7 +156,7 @@ main();
 // paint_liters = area_painted / yield
 */ 
 
-/* 2 incompleto
+/* Exercício 2
 function main () {
     
     let name, sname, year
@@ -223,28 +223,33 @@ function main () {
                 continue;
             }
             
+            year = String(year);
+            
             break;
         }
-        
-        function string_cut() {
+    }
+    
+    function string_cut() {
             user = name.toLowerCase()[0]+sname.toLowerCase()
             email = name.toLowerCase()+"."+sname.toLowerCase()+"@empresa.temp.br"
             pw = name + year.slice(-2)
-        }
     }
     
     ask_name();
     ask_sname();
     ask_year();
+    string_cut();
     
-    console.log(user, email, pw);
+    console.log(`Usuário: ${user}`);
+    console.log(`Email: ${email}`);
+    console.log(`Senha ${pw}`);
     
 }
 
 main();
 */
 
-/* 4
+/* Exercício 4
 function main() {
     let f;
     let c;
