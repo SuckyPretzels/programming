@@ -1,4 +1,4 @@
-/* Exercício 1
+// Exercício 1
 function main() {
     let width, length, height;
     let area_not_painted, yield;
@@ -154,9 +154,8 @@ main();
 // area_walls = 2 * (length + width) * height
 // area_painted = area_walls - area_not_painted
 // paint_liters = area_painted / yield
-*/ 
 
-/* Exercício 2
+// Exercício 2
 function main () {
     
     let name, sname, year
@@ -247,9 +246,8 @@ function main () {
 }
 
 main();
-*/
 
-/* Exercício 3
+// Exercício 3
 main();
 
 function main() {
@@ -282,9 +280,8 @@ function getPercentage(number) {
     let pc = num / 100
     return pc;
 }
-*/
 
-/* Exercício 4
+// Exercício 4
 function main() {
     let f;
     let c;
@@ -326,9 +323,55 @@ function main() {
 main();
 
 // c = ((f - 32) * 5) / 9
-*/ 
 
-/* Exercício 7 
+//Exercício 5
+main();
+
+function main() {
+    const id = getString("ID do produto: ")
+    const name = getString("Nome do produto: ")
+    const price = getString("Preço do produto: ")
+    const qty = getString("Quantidade do produto: ")
+    
+    console.log(id+",", name+",", price+",", qty+".");
+}
+
+function getString(promptmessage) {
+    while (true) {
+        let input = prompt(promptmessage)?.trim() ?? "";
+        if (input !== "") {
+            return input;
+        }
+        console.log("Por favor, digite algo");
+    }
+}
+
+// Exercício 6
+main();
+
+function main() {
+    const distance = getNumber("Distância da viagem (KM): ");
+    const consumption = getNumber("Consumo do combustível (KM/L): ");
+    const fuel_price = getNumber("Preço do combustível (R$/L: ");
+    const toll_num = getNumber("Número de pedágios: ");
+    const toll_cost = getNumber("Custo médio dos pedágios: ");
+    
+    const fuel_price_total = (distance / consumption) * fuel_price
+    const toll_cost_total = toll_num * toll_cost
+    const cost_total = fuel_price_total + toll_cost_total
+}
+
+function getNumber(promptmessage) {
+    while (true) {
+        let input = prompt(promptmessage)?.trim() ?? "";
+        if (input !== "" && !Number.isNaN(Number(input))) {
+            return Number(input);
+        }
+        console.log("Por favor, insira um número. Somente o número.");
+    }
+}
+
+// Exercício 7 
 main();
 
 function main() {
@@ -348,4 +391,3 @@ function getString(promptmessage) {
         console.log("Por favor, digite algo.");
     }
 }
-*/
