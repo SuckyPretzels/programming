@@ -249,6 +249,41 @@ function main () {
 main();
 */
 
+/* Exercício 3
+main();
+
+function main() {
+    const bruto = getNumber("Qual seu salário bruto? (insira só o número) ", "Por favor, insira um número.");
+    const insspc = getNumber("Qual o percentual do INSS? (insira só o número) ", "Por favor,  insira um número.");
+    const vtpc = getNumber("Qual o percentual do Vale Transporte? (insira só o número) ", "Por favor, insira um número.");
+    const valor_inss = getPercentage(insspc) * bruto;
+    const valor_vt = getPercentage(vtpc) * bruto;
+    const liquido = bruto - valor_vt - valor_inss;
+    const dc_total = bruto - liquido
+   
+    console.log(`Valor do INSS: ${valor_inss}`);
+    console.log(`Valor do Vale Transporte: ${valor_vt}`);
+    console.log(`Salário líquido: ${liquido}`);
+    console.log(`Desconto total: ${dc_total}`);
+}
+
+function getNumber(promptmessage, errormessage) {
+    while (true) {
+        let input = prompt(promptmessage)?.trim() ?? "";
+        if (input !== "" && !Number.isNaN(Number(input))) {
+            return input;
+        }
+        console.log(errormessage);
+    }
+}
+
+function getPercentage(number) {
+    let num = Number(number);
+    let pc = num / 100
+    return pc;
+}
+*/
+
 /* Exercício 4
 function main() {
     let f;
