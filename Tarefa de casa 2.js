@@ -156,6 +156,93 @@ main();
 // paint_liters = area_painted / yield
 */ 
 
+/* 2 incompleto
+function main () {
+    
+    let name, sname, year
+    let user, email, pw
+    
+    function ask_name() {
+        while (true) {
+            let input = prompt("Please tell me your name: ");
+            
+            if (input === null) {
+                console.log("Please insert a valid name.");
+                continue;
+            }
+            
+            if (input.trim() === "") {
+                console.log("Please insert a valid name.");
+                continue;
+            }
+            
+            name = input
+            
+            break;
+        }
+    }
+    
+    function ask_sname() {
+        while (true) {
+            let input = prompt("And surname: ");
+            
+            if (input === null) {
+                console.log("Please insert a surname.");
+                continue;
+            }
+            
+            if (input.trim() === "") {
+                console.log("Please insert a valid surname.");
+                continue;
+            }
+            
+            sname = input
+            
+            break;
+        }
+    }
+    
+    function ask_year() {
+        while (true) {
+            let input = prompt("What is your year of hiring: ");
+            
+            if (input === null) {
+                console.log("Please insert a valid number.");
+                continue;
+            }
+            
+            if (input.trim() === "") {
+                console.log("Please insert a valid number.");
+                continue;
+            }
+            
+            year = Number(input);
+            
+            if (Number.isNaN(year)) {
+                console.log("Please insert a valid number.");
+                continue;
+            }
+            
+            break;
+        }
+        
+        function string_cut() {
+            user = name.toLowerCase()[0]+sname.toLowerCase()
+            email = name.toLowerCase()+"."+sname.toLowerCase()+"@empresa.temp.br"
+            pw = name + year.slice(-2)
+        }
+    }
+    
+    ask_name();
+    ask_sname();
+    ask_year();
+    
+    console.log(user, email, pw);
+    
+}
+
+main();
+*/
 
 /* 4
 function main() {
