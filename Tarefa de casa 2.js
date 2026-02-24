@@ -327,3 +327,25 @@ main();
 
 // c = ((f - 32) * 5) / 9
 */ 
+
+/* Exercício 7 
+main();
+
+function main() {
+    const remetente = getString("Nome do remetente: ");
+    const destinatario = getString("Nome do destinatário: ")
+    const email = getString("Corpo da mensagem: ")
+    
+    console.log(`Prezado(a) ${destinatario}, me chamo ${remetente} e ${email}`);
+}
+
+function getString(promptmessage) {
+    while (true) {
+        let input = prompt(promptmessage)?.trim() ?? "";
+        if (input !== "") {
+            return input;
+        }
+        console.log("Por favor, digite algo.");
+    }
+}
+*/
