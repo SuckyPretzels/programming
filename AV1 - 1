@@ -1,0 +1,13 @@
+let age = prompt("Qual sua idade? ");
+let contribution = prompt("Quantos anos de contribuição? ");
+
+age = Number(age);
+contribution = Number(contribution);
+
+if (age >= 65) {
+    console.log("Você pode se aposentar :)");
+} else if (age >= 60 && contribution >= 30) {
+    console.log("Você pode se aposentar :)");
+} else {
+    console.log("Você não pode se aposentar :(")
+}
