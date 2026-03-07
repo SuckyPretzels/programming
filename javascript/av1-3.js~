@@ -1,0 +1,14 @@
+const prompt = require('prompt-sync')({ sigint: true });
+
+let name, maxspd, regspd, excspd;
+
+name = prompt("Qual o nome do motorista? ");
+maxspd = prompt("Qual a velocidade maxima da via? ");
+regspd = prompt("Qual a velocidade registrada do veiculo");
+
+excspd = regspd - maxpsd;
+
+if (excspd < 0) {
+    console.log("Motorista dentro do limite de velocidade.");
+} else {
+    console.log("Motorista acima do limite de velocidade");
