@@ -1,7 +1,7 @@
 // Exercício 1
 function main() {
     let width, length, height;
-    let area_not_painted, yield;
+    let area_not_painted, paint_yield;
     let area_walls, area_painted, liters;
     
     function ask_width() {
