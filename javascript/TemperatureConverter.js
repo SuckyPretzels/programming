@@ -3,7 +3,7 @@ const prompt = require('prompt-sync')({ sigint: true });
 let c, f;
 
 console.log("This program will convert Celsius to Fahrenheit or vice versa");
-let t = prompt("Which would you like to convert to? (C or F) ").trim().toLowerCase();
+let t = prompt("Which would you like to convert? (C or F) ").trim().toLowerCase();
 
 switch (t) {
 case "c":
