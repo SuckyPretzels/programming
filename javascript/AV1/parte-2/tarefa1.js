@@ -14,7 +14,7 @@ case 1:
     expected_consumption = 12;
     break;
 case 2:
-    expected_consumption = 8,5;
+    expected_consumption = 8.5;
     break;
 case 3:
     expected_consumption = 15;
