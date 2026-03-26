@@ -25,19 +25,19 @@ let operation = Number(prompt("Qual a operacao desejada? (1 - Saque 2 - Depósit
 switch (operation) {
 case 1:
     let saque = Number(prompt("Quanto dinheiro queres sacar? "));
-   switch (true) {
-   case saque > daily:
-       console.log("Saque negado — valor acima do limite diário.");
-       break;
-   case saque > saldo:
-       console.log("Saque negado — saldo insuficiente");
-       break;
-   case saque <= saldo:
-       console.log("Saque realizado com sucesso.");
-       break;
-   default:
-       console.log("Algo deu errado.");
-   } 
+    switch (true) {
+    case saque > daily:
+        console.log("Saque negado — valor acima do limite diário.");
+        break;
+    case saque > saldo:
+        console.log("Saque negado — saldo insuficiente");
+        break;
+    case saque <= saldo:
+        console.log("Saque realizado com sucesso.");
+        break;
+    default:
+        console.log("Algo deu errado.");
+    } 
     break;
 case 2:
     let deposit = Number(prompt("Quanto dinheiro queres depositar? "));
