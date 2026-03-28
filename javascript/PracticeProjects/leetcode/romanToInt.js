@@ -15,24 +15,26 @@ var romanToInt = function(s) {
     const ids = {
         I: 1, V: 2, X: 3, L: 4, C: 5, D: 6, M: 7
     };
-    
     for (let i = 0; i < s.length; i++) {
         let curr = s[i];
         let next = s[i+1];
         let prev = s[i-1];
+        // check if it's a roman numeral
+        if (!(curr in values)) {
+            return "This is not a roman numeral";
+        }
+        
         // repeats
-        if (i > 0 && values[curr] == values[prev]) {
+        if (i > 0 && values[prev] == values[curr]) {
             repeat++;
             if (curr == "I" || curr == "X" || curr == "C" || curr == "M") {
                 if (repeat > 3) {
-                    console.log("Numeral contains an invalid repetition.");
-                    return;
+                    return "Numeral contains an invalid repetition.";
                 } else {
                     // how are you doing today? :) 
                 }
             } else if (repeat > 1) {
-                console.log("Numeral contains an invalid repetition.");
-                return;
+                return "Numeral contains an invalid repetition.";
             }
         } else {
             repeat = 1;
@@ -47,16 +49,13 @@ var romanToInt = function(s) {
                         i += 1;
                         repeat = 1;
                     } else {
-                        console.log("Numeral contains an invalid subtraction.");
-                        return;
+                        return "Numeral contains an invalid subtraction.";
                     }
                 } else {
-                    console.log("Numeral contains an invalid subtraction.");
-                    return;
+                    return "Numeral contains an invalid subtraction.";
                 }
             } else {
-                console.log("Numeral contains an invalid subtraction.");
-                return;
+                return "Numeral contains an invalid subtraction.";
             }
         } else {
             total += values[curr];
@@ -65,5 +64,5 @@ var romanToInt = function(s) {
     return total;
 };
 
-let roman = prompt("Give me a roman numeral: ");
+let roman = prompt("Give me a roman numeral and i'll convert it to an integer: ");
 console.log(romanToInt(roman));

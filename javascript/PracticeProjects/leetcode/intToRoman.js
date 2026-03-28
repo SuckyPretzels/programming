@@ -3,13 +3,10 @@ const prompt = require('prompt-sync')({ sigint: true });
 var intToRoman = function(num) {
     num = Number(num);
     if (isNaN(num)) {
-        console.log("This is not a number.");
-        return;
+        return "This is not a number.";
     }
     if (num < 1 || num > 3999) {
-        console.log("Number out of range.");
-        console.log("Needs to be a number between 1 and 3999.");
-        return;
+        return "Number out of range.\nNeeds to be a number between 1 and 3999.";
     }
 
     let total = "";
