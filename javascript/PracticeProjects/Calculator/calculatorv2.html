@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Calculator</title>
+        <style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #111;
+}
+
+.calculator {
+    justify-self: center;
+    background-color: #333;
+    padding: 20px;
+    border-radius: 20px;
+    width: 320px;
+    height:500px;
+}
+
+#display {
+    width: 100%;
+    height: 80px;
+    font-size: 2.5rem;
+    text-align: right;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #444;
+    color: white;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+button {
+    height: 70px;
+    font-size: 1.6rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background-color: #222;
+    color: white;
+}
+
+.zero {
+    grid-column: span 2;
+}
+
+#AC {
+    grid-column: span 2;
+    background-color: lightgray;
+    color: black;
+}
+
+.operator {
+    font-size: 2rem;
+    background-color: orange;
+    color: white;
+}
+
+#minus {
+    font-size: 1.6rem;
+}
+
+#backspace {
+    background-color: #fc3c3c;
+}
+
+button:hover {
+    background-color: #444;
+    transform: scale(1.05);
+    transition: all 0.1s ease;
+}
+
+.operator:hover {
+    background-color: #fcc96a;
+}
+
+#AC:hover {
+    background-color: #999;
+}
+
+#backspace:hover {
+    background-color: #fc7474;
+}
+
+</style>
+    </head>
+    <body>
+        <div class="calculator">
+            <input type="text" id="display" readonly placeholder="0">
+            <div class="buttons">
+                <button onclick="clearDisplay()" id="AC">AC</button> 
+                <button onclick="backspace()" id="backspace">⌫</button>
+                <button onclick="addToDisplay('÷')" class="operator">÷</button> 
+
+                <button onclick="addToDisplay('7')">7</button> 
+                <button onclick="addToDisplay('8')">8</button> 
+                <button onclick="addToDisplay('9')">9</button> 
+                <button onclick="addToDisplay('×')" class="operator">×</button> 
+
+                <button onclick="addToDisplay('4')">4</button> 
+                <button onclick="addToDisplay('5')">5</button> 
+                <button onclick="addToDisplay('6')">6</button> 
+                <button onclick="addToDisplay('−')" class="operator" id="minus">−</button> 
+
+                <button onclick="addToDisplay('1')">1</button> 
+                <button onclick="addToDisplay('2')">2</button> 
+                <button onclick="addToDisplay('3')">3</button> 
+                <button onclick="addToDisplay('+')" class="operator">+</button> 
+
+                <button onclick="addToDisplay('0')" class="zero">0</button> 
+                <button onclick="addToDisplay('.')">.</button> 
+                <button onclick="calculate()" class="operator">=</button> 
+            </div>
+            
+        </div>
+        <script>
+const display = document.getElementById('display');
+display.value = "0";
+
+let equals = false;
+
+function decimalPoint(displayValue) {
+    let parts = displayValue.split(/[+\−×÷]/);
+    let currentNumber = parts[parts.length -1];
+
+    return currentNumber.includes(".");
+}
+
+function isOperator(char) {
+    return ["+", "−", "×", "÷"].includes(char);
+}
+
+function addToDisplay(s) {
+    let lastChar = display.value.slice(-1);
+    // handle if an operation was just evaluated
+    if (equals) {
+        if (!isNaN(s)) {
+            display.value = s;
+        } else if (display.value == "Indeterminate" || display.value == "Error") {
+            display.value = "0";
+            display.value += s;
+        } else {
+            display.value += s;
+        }
+        equals = false;
+        return;
+    }
+
+    // check if there is already a decimal point in the current number
+    if (s == ".") {
+        if (decimalPoint(display.value)) return;   
+        if (isNaN(lastChar)) {
+            display.value += "0.";
+            return;
+        }
+    }
+    
+    // prevent multiple operators in sequence
+    if (isOperator(lastChar) && isOperator(s)) {
+        display.value = display.value.slice(0, -1) + s;
+        return;
+    }
+    
+    // handle leading zeros.
+    if (display.value == "0" && (!isNaN(s) || s == "−" || s == "+")) {
+        display.value = s;
+    } else {
+        display.value += s;
+    }
+}
+
+function backspace() {
+    if (display.value == "Error" || display.value == "Indeterminate") {
+        display.value = "0";
+    } else {
+        display.value = display.value.slice(0, -1) || "0";
+    }
+}
+
+function clearDisplay() {
+    display.value = "0";
+    equals = false;
+}
+
+function calculate() {
+    let input = display.value;
+    let expression = "";
+    for (let i = 0; i < input.length; i++) {
+        if (input[i] == "÷") {
+            expression += "/";
+        } else if (input[i] == "×") {
+            expression += "*";
+        } else if (input[i] == "−") {
+            expression += "-";
+        } else {
+            expression += input[i];
+        }
+    }
+
+    let result = eval(expression);
+
+    if (isNaN(result)) {
+        display.value = "Indeterminate";
+    } else if (!isFinite(result)) {
+        display.value = "Error";
+    } else {
+        display.value = result;
+    }
+    equals = true;
+}
+
+</script>
+    </body>
+</html>
