@@ -75,7 +75,6 @@ body {
     margin: 0;
     font-size: 2rem;
     font-weight: bold;
-    color: lightgray;
 }
 
 #player-symbol.x {
@@ -126,7 +125,7 @@ button {
                 </div>
             </div>
             <div class="status-area">
-                <button onclick="reset()" class="reset">Reset</button>
+                <button id="resetbtn" class="reset">Reset</button>
                 <p id="status">
                     <span class="x" id="player-symbol">X</span>'s turn
                 </p>
@@ -135,6 +134,7 @@ button {
         <script>
 const buttons = document.querySelectorAll('.buttons button');
 const playerSymbol = document.getElementById('player-symbol');
+const resetbtn = document.getElementById('resetbtn');
 let player = "X";
 let boardState = [
     "", "", "",
@@ -188,6 +188,8 @@ function reset() {
     playerSymbol.classList.remove('x','o');
     playerSymbol.classList.add('x');
 }
+
+resetbtn.addEventListener('click', reset);
 
 </script>
     </body>

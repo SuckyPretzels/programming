@@ -1,5 +1,6 @@
 const buttons = document.querySelectorAll('.buttons button');
 const playerSymbol = document.getElementById('player-symbol');
+const resetbtn = document.getElementById('resetbtn');
 let player = "X";
 let boardState = [
     "", "", "",
@@ -53,3 +54,5 @@ function reset() {
     playerSymbol.classList.remove('x','o');
     playerSymbol.classList.add('x');
 }
+
+resetbtn.addEventListener('click', reset);
