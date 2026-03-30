@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TicTacToe</title>
+        <style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.game {
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+    margin-left: 190px;
+}
+
+.playarea {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 20px;
+    width: 500px;
+    height: 500px;
+    flex-shrink: 0;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.reset {
+    background-color: #222;
+    padding: 5px;
+    border-radius: 10px;
+    width: 100%;
+    height: 50%;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: lightgray;
+}
+
+.reset:hover {
+    background-color: #444;
+    transform: scale(1.05);
+}
+
+.status-area {
+    background-color: #333;
+    padding: 5px;
+    border-radius: 10px;
+    width: 150px;
+    height: 120px;
+    text-align: center;
+}
+
+#status {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: lightgray;
+}
+
+#player-symbol {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: lightgray;
+}
+
+#player-symbol.x {
+    color: #4da6ff;
+}
+
+#player-symbol.o {
+    color: #ff4d4d;
+}
+
+button {
+    height: 145px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background-color: #222;
+}
+
+.x {
+    color: #4da6ff;
+    font-size: 100px;
+    font-weight: bold;
+}
+
+.o {
+    color: #ff4d4d;
+    font-size: 100px;
+    font-weight: bold;
+}
+
+</style>
+    </head> 
+    <body>
+        <div class="game">
+            <div class="playarea">
+                <div class="buttons">
+                    <button data-index='0'></button>
+                    <button data-index='1'></button>
+                    <button data-index='2'></button>
+
+                    <button data-index='3'></button>
+                    <button data-index='4'></button>
+                    <button data-index='5'></button>
+
+                    <button data-index='6'></button>
+                    <button data-index='7'></button>
+                    <button data-index='8'></button>
+                </div>
+            </div>
+            <div class="status-area">
+                <button onclick="reset()" class="reset">Reset</button>
+                <p id="status">
+                    <span class="x" id="player-symbol">X</span>'s turn
+                </p>
+            </div>
+        </div>
+        <script>
+const buttons = document.querySelectorAll('.buttons button');
+const playerSymbol = document.getElementById('player-symbol');
+let player = "X";
+let boardState = [
+    "", "", "",
+    "", "", "",
+    "", "", ""
+];
+
+buttons.forEach(button => {
+    button.addEventListener('click', click);
+});
+
+function click(event) {
+    const button = event.target;
+    const index = parseInt(button.dataset.index);
+
+    if (boardState[index] !== "") {
+        return;
+    }
+
+    boardState[index] = player;
+    button.textContent = player;
+    
+    if (player == "X") {
+        button.classList.add("x");
+    } else {
+        button.classList.add("o");
+    }
+
+    player = player == "X" ? "O" : "X";
+
+    playerSymbol.textContent = player;
+    playerSymbol.classList.remove('x','o');
+    playerSymbol.classList.add(player.toLowerCase());
+}
+
+function reset() {
+    boardState = [
+        "", "", "",
+        "", "", "",
+        "", "", ""
+    ];
+
+    buttons.forEach(button => {
+        button.textContent = "";
+        button.classList.remove('x','o');
+    });
+
+    player = "X";
+
+    playerSymbol.textContent = player;
+    playerSymbol.classList.remove('x','o');
+    playerSymbol.classList.add('x');
+}
+
+</script>
+    </body>
+</html>

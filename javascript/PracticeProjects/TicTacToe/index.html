@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TicTacToe</title>
+        <link rel="stylesheet" href="style.css">
+    </head> 
+    <body>
+        <div class="game">
+            <div class="playarea">
+                <div class="buttons">
+                    <button data-index='0'></button>
+                    <button data-index='1'></button>
+                    <button data-index='2'></button>
+
+                    <button data-index='3'></button>
+                    <button data-index='4'></button>
+                    <button data-index='5'></button>
+
+                    <button data-index='6'></button>
+                    <button data-index='7'></button>
+                    <button data-index='8'></button>
+                </div>
+            </div>
+            <div class="status-area">
+                <button onclick="reset()" class="reset">Reset</button>
+                <p id="status">
+                    <span class="x" id="player-symbol">X</span>'s turn
+                </p>
+            </div>
+        </div>
+        <script src="index.js"></script>
+    </body>
+</html>

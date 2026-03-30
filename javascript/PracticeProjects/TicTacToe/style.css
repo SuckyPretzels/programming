@@ -1,0 +1,100 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.game {
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+    margin-left: 190px;
+}
+
+.playarea {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 20px;
+    width: 500px;
+    height: 500px;
+    flex-shrink: 0;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.reset {
+    background-color: #222;
+    padding: 5px;
+    border-radius: 10px;
+    width: 100%;
+    height: 50%;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: lightgray;
+}
+
+.reset:hover {
+    background-color: #444;
+    transform: scale(1.05);
+}
+
+.status-area {
+    background-color: #333;
+    padding: 5px;
+    border-radius: 10px;
+    width: 150px;
+    height: 120px;
+    text-align: center;
+}
+
+#status {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: lightgray;
+}
+
+#player-symbol {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: lightgray;
+}
+
+#player-symbol.x {
+    color: #4da6ff;
+}
+
+#player-symbol.o {
+    color: #ff4d4d;
+}
+
+button {
+    height: 145px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background-color: #222;
+}
+
+.x {
+    color: #4da6ff;
+    font-size: 100px;
+    font-weight: bold;
+}
+
+.o {
+    color: #ff4d4d;
+    font-size: 100px;
+    font-weight: bold;
+}
