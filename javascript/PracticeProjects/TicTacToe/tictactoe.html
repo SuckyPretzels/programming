@@ -10,6 +10,7 @@
 }
 
 body {
+    background-color: #222;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -38,7 +39,7 @@ body {
     gap: 12px;
 }
 
-.reset {
+#reset-btn {
     background-color: #222;
     padding: 5px;
     border-radius: 10px;
@@ -50,7 +51,7 @@ body {
     color: lightgray;
 }
 
-.reset:hover {
+#reset-btn:hover {
     background-color: #444;
     transform: scale(1.05);
 }
@@ -77,32 +78,27 @@ body {
     font-weight: bold;
 }
 
-#player-symbol.x {
-    color: #4da6ff;
-}
-
-#player-symbol.o {
-    color: #ff4d4d;
-}
-
 button {
     height: 145px;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     background-color: #222;
+    font-size: 100px;
+    font-weight: bold;
 }
 
 .x {
     color: #4da6ff;
-    font-size: 100px;
-    font-weight: bold;
 }
 
 .o {
     color: #ff4d4d;
-    font-size: 100px;
-    font-weight: bold;
+}
+
+button.winner {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    transition: all 0.3s ease;
 }
 
 </style>
@@ -125,71 +121,167 @@ button {
                 </div>
             </div>
             <div class="status-area">
-                <button id="resetbtn" class="reset">Reset</button>
+                <button id="reset-btn">Reset</button>
                 <p id="status">
-                    <span class="x" id="player-symbol">X</span>'s turn
+                    <span class="x" id="player-symbol">X</span><span id="status-message">'s turn</span>
                 </p>
             </div>
         </div>
         <script>
 const buttons = document.querySelectorAll('.buttons button');
 const playerSymbol = document.getElementById('player-symbol');
-const resetbtn = document.getElementById('resetbtn');
-let player = "X";
-let boardState = [
-    "", "", "",
-    "", "", "",
-    "", "", ""
-];
-
+const resetBtn = document.getElementById('reset-btn');
+const statusMessage = document.getElementById('status-message');
+let playerStart = "X"; // who should start the NEXT round.
+let player = playerStart;
+let boardState = emptyBoard();
+let gameOver = false;
 buttons.forEach(button => {
-    button.addEventListener('click', click);
+    button.addEventListener('click', handleClick);
 });
 
-function click(event) {
+function emptyBoard() {
+    return [
+        "", "", "",
+        "", "", "",
+        "", "", ""
+    ];
+}
+
+function handleClick(event) {
     const button = event.target;
     const index = parseInt(button.dataset.index);
 
-    if (boardState[index] !== "") {
-        return;
-    }
+    if (gameOver || boardState[index] !== "") { return; }
 
     boardState[index] = player;
     button.textContent = player;
     
-    if (player == "X") {
+    if (player === "X") {
         button.classList.add("x");
     } else {
         button.classList.add("o");
     }
 
-    player = player == "X" ? "O" : "X";
+    const winningResult = checkWin();
 
-    playerSymbol.textContent = player;
-    playerSymbol.classList.remove('x','o');
-    playerSymbol.classList.add(player.toLowerCase());
+    if (winningResult || checkDraw()) {
+        gameOver = true;
+    }
+
+    if (winningResult) {
+        winningResult.forEach(line => {
+            highlightWinningLine(line);
+        });
+        const winner = boardState[winningResult[0][0]];
+        updateStatus("win", winner);
+        return;
+    }
+
+    if (checkDraw()) {
+        updateStatus("draw");
+        return;
+    }
+    updatePlayer("turn");
+    updateStatus("turn", player);
 }
 
 function reset() {
-    boardState = [
-        "", "", "",
-        "", "", "",
-        "", "", ""
-    ];
+    boardState = emptyBoard();
 
     buttons.forEach(button => {
         button.textContent = "";
-        button.classList.remove('x','o');
+        button.classList.remove('x','o','winner');
     });
-
-    player = "X";
-
-    playerSymbol.textContent = player;
-    playerSymbol.classList.remove('x','o');
-    playerSymbol.classList.add('x');
+    updatePlayer("reset");
+    gameOver = false;
+    updateStatus("turn", player);
 }
 
-resetbtn.addEventListener('click', reset);
+resetBtn.addEventListener('click', reset);
+
+function updatePlayer(type) {
+    if (type === "reset") {
+        if (gameOver) {
+            playerStart = playerStart === "X" ? "O" : "X";
+            player = playerStart;
+        } else {
+            player = playerStart;
+        }
+    } else if (type === "turn") {
+        player = player === "X" ? "O" : "X";
+    }
+}
+
+function updateStatus(type, value) {
+    playerSymbol.classList.remove('x','o');
+
+    if (type === "turn") {
+        playerSymbol.textContent = value;
+        playerSymbol.classList.add(value.toLowerCase());
+        statusMessage.textContent = "'s turn";
+    }
+
+    if (type === "win") {
+        playerSymbol.textContent = value;
+        playerSymbol.classList.add(value.toLowerCase());
+        statusMessage.textContent = " wins!";
+    }
+
+    if (type === "draw") {
+        playerSymbol.textContent = "";
+        statusMessage.textContent = "Draw!";
+    }
+}
+
+function checkWin() {
+    const winPatterns = [
+        // horizontal wins
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+
+        // vertical wins
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+
+        // diagonal wins
+        [0,4,8],
+        [2,4,6]
+    ];
+
+    let winningLines = [];
+
+    for (let pattern of winPatterns) {
+        const [a, b, c] = pattern;
+
+        if (boardState[a] !== "" &&
+            boardState[a] === boardState[b] &&
+            boardState[b] === boardState[c]) {
+
+            winningLines.push(pattern);
+        }
+    }
+
+    if (winningLines.length > 0) {
+        return winningLines;
+    }
+    return null;
+}
+
+function checkDraw() {
+    return boardState.every(cell => cell !== "");
+}
+
+function highlightWinningLine(winningIndices) {
+    winningIndices.forEach(index => {
+        const button = buttons[index];
+        if (button) {
+            button.classList.add('winner');
+        }
+    });
+}
 
 </script>
     </body>

@@ -1,21 +1,24 @@
 const buttons = document.querySelectorAll('.buttons button');
 const playerSymbol = document.getElementById('player-symbol');
-const resetbtn = document.getElementById('resetbtn');
-const statusMessage = document.getElementById('statusmessage');
-// let playerStart = "X"; // who should start the NEXT match.
-let player = "X";
-let boardState = [
-    "", "", "",
-    "", "", "",
-    "", "", ""
-];
+const resetBtn = document.getElementById('reset-btn');
+const statusMessage = document.getElementById('status-message');
+let playerStart = "X"; // who should start the NEXT round.
+let player = playerStart;
+let boardState = emptyBoard();
 let gameOver = false;
-
 buttons.forEach(button => {
-    button.addEventListener('click', click);
+    button.addEventListener('click', handleClick);
 });
 
-function click(event) {
+function emptyBoard() {
+    return [
+        "", "", "",
+        "", "", "",
+        "", "", ""
+    ];
+}
+
+function handleClick(event) {
     const button = event.target;
     const index = parseInt(button.dataset.index);
 
@@ -30,52 +33,74 @@ function click(event) {
         button.classList.add("o");
     }
 
-    if (checkWin()) {
-        updateStatus(checkWin());
+    const winningResult = checkWin();
+
+    if (winningResult || checkDraw()) {
+        gameOver = true;
+    }
+
+    if (winningResult) {
+        winningResult.forEach(line => {
+            highlightWinningLine(line);
+        });
+        const winner = boardState[winningResult[0][0]];
+        updateStatus("win", winner);
         return;
     }
 
-    player = player === "X" ? "O" : "X";
-    updateStatus();
-
+    if (checkDraw()) {
+        updateStatus("draw");
+        return;
+    }
+    updatePlayer("turn");
+    updateStatus("turn", player);
 }
 
 function reset() {
-    boardState = [
-        "", "", "",
-        "", "", "",
-        "", "", ""
-    ];
+    boardState = emptyBoard();
 
     buttons.forEach(button => {
         button.textContent = "";
-        button.classList.remove('x','o');
+        button.classList.remove('x','o','winner');
     });
-
-    if (checkWin() == "" || !gameOver) {
-        player = player === "X" ? "X" : "O";
-    } else {
-        player = player === "X" ? "O" : "X";
-    }
-
+    updatePlayer("reset");
     gameOver = false;
-    updateStatus();
+    updateStatus("turn", player);
 }
 
-resetbtn.addEventListener('click', reset);
+resetBtn.addEventListener('click', reset);
 
-function updateStatus(playervalue) {
-    playervalue = playervalue || player;
-    playerSymbol.textContent = playervalue;
+function updatePlayer(type) {
+    if (type === "reset") {
+        if (gameOver) {
+            playerStart = playerStart === "X" ? "O" : "X";
+            player = playerStart;
+        } else {
+            player = playerStart;
+        }
+    } else if (type === "turn") {
+        player = player === "X" ? "O" : "X";
+    }
+}
+
+function updateStatus(type, value) {
     playerSymbol.classList.remove('x','o');
-    playerSymbol.classList.add(playervalue.toLowerCase());
-    if (gameOver && checkWin() !== "") {
+
+    if (type === "turn") {
+        playerSymbol.textContent = value;
+        playerSymbol.classList.add(value.toLowerCase());
+        statusMessage.textContent = "'s turn";
+    }
+
+    if (type === "win") {
+        playerSymbol.textContent = value;
+        playerSymbol.classList.add(value.toLowerCase());
         statusMessage.textContent = " wins!";
-    } else if (gameOver) {
+    }
+
+    if (type === "draw") {
         playerSymbol.textContent = "";
         statusMessage.textContent = "Draw!";
-    } else {
-        statusMessage.textContent = "'s turn";
     }
 }
 
@@ -96,17 +121,34 @@ function checkWin() {
         [2,4,6]
     ];
 
+    let winningLines = [];
+
     for (let pattern of winPatterns) {
         const [a, b, c] = pattern;
 
         if (boardState[a] !== "" &&
             boardState[a] === boardState[b] &&
             boardState[b] === boardState[c]) {
-            
-            gameOver = true;
-            return boardState[a];
+
+            winningLines.push(pattern);
         }
     }
-    gameOver = false;
+
+    if (winningLines.length > 0) {
+        return winningLines;
+    }
     return null;
+}
+
+function checkDraw() {
+    return boardState.every(cell => cell !== "");
+}
+
+function highlightWinningLine(winningIndices) {
+    winningIndices.forEach(index => {
+        const button = buttons[index];
+        if (button) {
+            button.classList.add('winner');
+        }
+    });
 }
