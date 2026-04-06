@@ -1,0 +1,29 @@
+body {
+    background-color: #222;
+    height: 100vh;
+}
+
+#counter-label {
+    display: block;
+    text-align: center;
+    font-size: 10em;
+    color: white;
+}
+
+.buttons {
+    text-align: center;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1.5em;
+    color: white;
+    background-color: hsl(214, 100%, 74%);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.25s;
+}
+
+button:hover {
+    background-color: hsl(214, 100%, 54%);
+}
