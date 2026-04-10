@@ -1,10 +1,18 @@
+const int ledR = 6;
+const int ledG = 5;
+const int ledB = 3;
+
+const int potR = A0;
+const int potG = A1;
+const int potB = A2;
+
 void setup() {
-  pinMode(A0, INPUT);
-  pinMode(A1, INPUT);
-  pinMode(A2, INPUT);
-  pinMode(6, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(3, OUTPUT);
+  pinMode(potR, INPUT);
+  pinMode(potG, INPUT);
+  pinMode(potB, INPUT);
+  pinMode(ledR, OUTPUT);
+  pinMode(ledG, OUTPUT);
+  pinMode(ledB, OUTPUT);
   Serial.begin(9600);
 }
 
