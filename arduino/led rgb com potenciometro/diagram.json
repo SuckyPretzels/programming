@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-breadboard", "id": "bb1", "top": -3, "left": 300.4, "attrs": {} },
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 81.6,
+      "left": 316.25,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 81.6,
+      "left": 335.45,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 81.6,
+      "left": 345.05,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-rgb-led",
+      "id": "rgb1",
+      "top": 90.4,
+      "left": 337.1,
+      "attrs": { "common": "cathode" }
+    },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": 46.7, "left": 460.6, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot2", "top": 46.7, "left": 547, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot3", "top": 46.7, "left": 633.4, "attrs": {} }
+  ],
+  "connections": [
+    [ "bb1:bn.2", "bb1:4b.j", "green", [ "v0" ] ],
+    [ "r1:1", "bb1:3t.b", "", [ "$bb" ] ],
+    [ "r1:2", "bb1:3b.f", "", [ "$bb" ] ],
+    [ "r2:1", "bb1:5t.b", "", [ "$bb" ] ],
+    [ "r2:2", "bb1:5b.f", "", [ "$bb" ] ],
+    [ "r3:1", "bb1:6t.b", "", [ "$bb" ] ],
+    [ "r3:2", "bb1:6b.f", "", [ "$bb" ] ],
+    [ "pot1:GND", "bb1:18b.f", "", [ "$bb" ] ],
+    [ "pot1:SIG", "bb1:19b.f", "", [ "$bb" ] ],
+    [ "pot1:VCC", "bb1:20b.f", "", [ "$bb" ] ],
+    [ "pot2:GND", "bb1:27b.f", "", [ "$bb" ] ],
+    [ "pot2:SIG", "bb1:28b.f", "", [ "$bb" ] ],
+    [ "pot2:VCC", "bb1:29b.f", "", [ "$bb" ] ],
+    [ "pot3:GND", "bb1:36b.f", "", [ "$bb" ] ],
+    [ "pot3:SIG", "bb1:37b.f", "", [ "$bb" ] ],
+    [ "pot3:VCC", "bb1:38b.f", "", [ "$bb" ] ],
+    [ "pot1:GND", "bb1:bn.14", "black", [ "v0" ] ],
+    [ "pot1:VCC", "bb1:bp.15", "red", [ "v0" ] ],
+    [ "pot1:SIG", "uno:A0", "red", [ "v144", "h-10" ] ],
+    [ "pot2:GND", "bb1:bn.21", "black", [ "v0" ] ],
+    [ "pot2:VCC", "bb1:bp.23", "red", [ "v0" ] ],
+    [ "pot2:SIG", "uno:A1", "limegreen", [ "v105.6", "h-374.8" ] ],
+    [ "pot3:VCC", "bb1:bp.30", "red", [ "v0" ] ],
+    [ "pot3:GND", "bb1:bn.29", "black", [ "v0" ] ],
+    [ "pot3:SIG", "uno:A2", "blue", [ "v124.8", "h-442" ] ],
+    [ "uno:GND.1", "bb1:tn.1", "black", [ "v-47.4", "h230.1" ] ],
+    [ "uno:5V", "bb1:bp.41", "red", [ "v106.1", "h665.6" ] ],
+    [ "bb1:bp.43", "bb1:tp.43", "red", [ "v0" ] ],
+    [ "bb1:bn.44", "bb1:tn.44", "black", [ "v0" ] ],
+    [ "bb1:3t.a", "uno:6", "red", [ "v-67.2", "h-153.6" ] ],
+    [ "bb1:5t.a", "uno:5", "limegreen", [ "v-76.8", "h-153.6" ] ],
+    [ "bb1:6t.a", "uno:3", "blue", [ "v-86.4", "h-144", "v28.8" ] ],
+    [ "rgb1:R", "bb1:3b.h", "", [ "$bb" ] ],
+    [ "rgb1:COM", "bb1:4b.i", "", [ "$bb" ] ],
+    [ "rgb1:G", "bb1:5b.h", "", [ "$bb" ] ],
+    [ "rgb1:B", "bb1:6b.h", "", [ "$bb" ] ]
+  ],
+  "dependencies": {}
+}
