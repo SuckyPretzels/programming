@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": -3, "left": 319.6, "attrs": {} },
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-hc-sr04", "id": "ultrasonic1", "top": -46.5, "left": 341.5, "attrs": {} }
+  ],
+  "connections": [
+    [ "uno:GND.2", "bb1:bn.1", "black", [ "v29.3", "h185.7" ] ],
+    [ "uno:5V", "bb1:bp.2", "red", [ "v38.9", "h204.8" ] ],
+    [ "uno:3", "bb1:9t.c", "orange", [ "v0" ] ],
+    [ "uno:2", "bb1:10t.d", "gold", [ "v0" ] ],
+    [ "bb1:8t.e", "bb1:bp.6", "red", [ "v0" ] ],
+    [ "bb1:bn.9", "bb1:11t.e", "black", [ "v0" ] ],
+    [ "ultrasonic1:VCC", "bb1:8t.a", "", [ "$bb" ] ],
+    [ "ultrasonic1:TRIG", "bb1:9t.a", "", [ "$bb" ] ],
+    [ "ultrasonic1:ECHO", "bb1:10t.a", "", [ "$bb" ] ],
+    [ "ultrasonic1:GND", "bb1:11t.a", "", [ "$bb" ] ]
+  ],
+  "dependencies": {}
+}
