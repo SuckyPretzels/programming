@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-breadboard-half",
+      "id": "bb1",
+      "top": 6.6,
+      "left": 319.6,
+      "attrs": { "color": "#eeefed" }
+    },
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 44.4, "left": 579.8, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 120,
+      "left": 565.85,
+      "rotate": 90,
+      "attrs": { "value": "330" }
+    },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir1", "top": 32.8, "left": 357.42, "attrs": {} }
+  ],
+  "connections": [
+    [ "uno:GND.2", "bb1:bn.1", "black", [ "v67.7", "h176.1" ] ],
+    [ "uno:5V", "bb1:bp.2", "red", [ "v77.3", "h204.8" ] ],
+    [ "bb1:bn.22", "bb1:27b.j", "black", [ "v0" ] ],
+    [ "bb1:bp.5", "bb1:6b.g", "red", [ "v0" ] ],
+    [ "bb1:bn.6", "bb1:8b.h", "black", [ "v0" ] ],
+    [ "r1:1", "bb1:27t.e", "", [ "$bb" ] ],
+    [ "r1:2", "bb1:27b.i", "", [ "$bb" ] ],
+    [ "pir1:VCC", "bb1:6b.f", "", [ "$bb" ] ],
+    [ "pir1:OUT", "bb1:7b.f", "", [ "$bb" ] ],
+    [ "pir1:GND", "bb1:8b.f", "", [ "$bb" ] ],
+    [ "bb1:7b.g", "uno:2", "gold", [ "v-153.6", "h-163.2" ] ],
+    [ "bb1:28t.c", "uno:3", "red", [ "v-134.4", "h-134.4" ] ],
+    [ "led1:A", "bb1:28t.d", "", [ "$bb" ] ],
+    [ "led1:C", "bb1:27t.d", "", [ "$bb" ] ]
+  ],
+  "dependencies": {}
+}
