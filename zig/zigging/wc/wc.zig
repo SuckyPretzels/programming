@@ -2,9 +2,24 @@ const std = @import("std");
 const print = std.debug.print;
 const bufferSize: usize = 4096;
 
+const Flag:type = enum {
+    bytes,
+    chars,
+    lines,
+    lineMaxWidth,
+    words,
+};
+
+const Config:type = struct {
+    bytes:bool = false,
+    chars:bool = false,
+    lines:bool = false,
+};
+
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
     const allocator = init.arena.allocator();
+    var config:Config = Config{};
     // var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     // const allocator = arena.allocator();
     // const gpa = init.gpa;
@@ -14,29 +29,51 @@ pub fn main(init: std.process.Init) !void {
         print("Usage: wc <filepath>\n", .{});
         return;
     }
-    const filename = args[1];
+    const filename = try readArgs(args, &config);
     var file = try std.Io.Dir.cwd().openFile(io, filename, .{});
     defer file.close(io);
     const stat = try file.stat(io);
-
 
     var buffer:[bufferSize]u8 = undefined;
     var fileReader = file.reader(io, &buffer);      
     const reader = &fileReader.interface;           
     _ = try reader.readSliceShort(&buffer);
 
+
     const newlineCount = countNewline(&buffer);
     const wordCount = countWord(&buffer);
     const bytes = stat.size;
+    //TODO: process the config into actual instructions
+    //TODO: add support for passing multiple files
 
-    print("{} newlines, {} words, {} bytes\n", .{newlineCount, wordCount, bytes});
+    print("{} newlines, {} words, {} bytes {s}\n", .{newlineCount, wordCount, bytes, filename});
+}
 
-    // while (true) {                                  
-    //     var chunk: [bufferSize]u8 = undefined;             
-    //     const n = try reader.readSliceShort(&chunk);
-    //     if (n == 0) break;                           
-    //     print("\nChunk:\n{s}", .{chunk[0..n]});      
-    // }                                                
+fn readArgs(args: []const [:0]const u8, config: *Config) ![:0]const u8{
+    for (args[1..]) |arg| {
+        if (arg.len > 0 and arg[0] == '-') {
+            try parseFlags(arg, config);
+        } else {
+            return arg;
+        }
+    }
+    print("No filename provided\n", .{});
+    return error.NoFilename;
+}
+
+fn parseFlags(arg:[:0]const u8, config: *Config) !void {
+    if (arg.len == 0 or arg[0] != '-') return;
+    for (arg[1..]) |char| {
+        switch(char) {
+            'c' => config.bytes = true,
+            'm' => config.chars = true,
+            'l' => config.lines = true,
+            else => {
+                print("Invalid flag: -{c}\n", .{char});
+                return error.InvalidFlag;
+            }
+        }
+    }
 }
 
 fn countWord(buffer: *[bufferSize]u8) usize {
@@ -65,17 +102,4 @@ fn countNewline(buffer: *[bufferSize]u8) usize {
         }
     }
     return count;
-}
-
-pub fn othermain(init: std.process.Init) !void {
-    const io = init.io;
-    const gpa = init.gpa;
-    var file = try std.Io.Dir.cwd().openFile(io, "example.txt", .{});
-    defer file.close(io);
-    const stat = try file.stat(io);
-    if (stat.size == 0) return;
-    const buf = try gpa.alloc(u8, stat.size);
-    defer gpa.free(buf);
-    _ = try file.readPositionalAll(io, buf, 0);
-    try std.Io.File.stdout().writeStreamingAll(io, buf);
 }
