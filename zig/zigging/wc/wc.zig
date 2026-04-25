@@ -1,6 +1,5 @@
 const std = @import("std");
-const print = std.debug.print;
-const bufferSize: usize = 4096;
+const debugPrint = std.debug.print;
 
 const Flag:type = enum {
     bytes,
@@ -19,46 +18,99 @@ const Config:type = struct {
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
     const allocator = init.arena.allocator();
+    var stdout_writer = std.Io.File.stdout().writer(io, &.{});
+    var stdout = &stdout_writer.interface;
     var config:Config = Config{};
-    // var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    // const allocator = arena.allocator();
-    // const gpa = init.gpa;
+    var guide = true;
 
-    const args = try init.minimal.args.toSlice(allocator);
-    if (args.len < 2) {
-        print("Usage: wc <filepath>\n", .{});
+    var args = try init.minimal.args.toSlice(allocator);
+    args = args[1..];
+
+    if (args.len < 1) {
+        debugPrint("Usage: wc [flags] [filepath]\n", .{});
         return;
     }
-    const filename = try readArgs(args, &config);
-    var file = try std.Io.Dir.cwd().openFile(io, filename, .{});
-    defer file.close(io);
-    const stat = try file.stat(io);
 
-    var buffer:[bufferSize]u8 = undefined;
-    var fileReader = file.reader(io, &buffer);      
-    const reader = &fileReader.interface;           
-    _ = try reader.readSliceShort(&buffer);
+    const filenames = try readArgs(allocator, args, &config);
 
+    for (filenames) |filename| {
+        var file = try std.Io.Dir.cwd().openFile(io, filename, .{});
+        defer file.close(io);
+        const stat = try file.stat(io);
+        if (stat.size == 0) return error.emptyFile;
 
-    const newlineCount = countNewline(&buffer);
-    const wordCount = countWord(&buffer);
-    const bytes = stat.size;
-    //TODO: process the config into actual instructions
-    //TODO: add support for passing multiple files
+        const buffer = try allocator.alloc(u8, stat.size);
+        defer allocator.free(buffer);
+        _ = try file.readPositionalAll(io, buffer, 0);
 
-    print("{} newlines, {} words, {} bytes {s}\n", .{newlineCount, wordCount, bytes, filename});
+        const newlineCount:usize = countNewline(buffer);
+        const wordCount:usize    = countWord(buffer);
+        const bytes:u64          = stat.size;
+
+        var max_newlines: usize = "newlines".len;
+        var max_words:    usize = "words".len;
+        var max_bytes:    usize = "bytes".len;
+        var max_filename: usize = "filename".len;
+        max_newlines            = @max(max_newlines, digitCount(newlineCount));
+        max_words               = @max(max_words, digitCount(wordCount));
+        max_bytes               = @max(max_bytes, digitCount(bytes));
+        max_filename            = @max(max_filename, filename.len);
+        //TODO: process the config into actual instructions
+        
+        if (guide) {
+            try stdout.print("newlines | words | bytes | filename\n", .{});
+            const barSize = max_newlines + max_words + max_bytes + max_filename;
+            var i:usize = 0;
+
+            while (i < barSize + 10) : (i += 1) {
+                try stdout.print("—", .{});
+            }
+            try stdout.print("\n", .{});
+
+            guide = false;
+        }
+
+        try printPadded(stdout, newlineCount, max_newlines);
+        try stdout.print(" | ", .{});
+        try printPadded(stdout, wordCount, max_words);
+        try stdout.print(" | ", .{});
+        try printPadded(stdout, bytes, max_bytes);
+        try stdout.print(" | {s}\n", .{filename});
+    }
 }
 
-fn readArgs(args: []const [:0]const u8, config: *Config) ![:0]const u8{
-    for (args[1..]) |arg| {
+fn printPadded(writer: anytype, value: usize, width: usize) !void {
+    try writer.print("{d}", .{value});
+    const digits = digitCount(value);
+    var i: usize = digits;
+    while (i < width) : (i += 1) {
+        try writer.print(" ", .{});
+    }
+}
+
+fn digitCount(n: usize) usize {
+    var x = n;
+    var count: usize = 1;
+    while (x >= 10) : (x /= 10) {
+        count += 1;
+    }
+    return count;
+}
+
+fn readArgs(allocator: std.mem.Allocator, args:[]const [:0]const u8, config: *Config) ![]const [:0]const u8 {
+    var filenames = std.ArrayList([:0]const u8).empty;
+    for (args) |arg| {
         if (arg.len > 0 and arg[0] == '-') {
             try parseFlags(arg, config);
         } else {
-            return arg;
+            try filenames.append(allocator, arg);
         }
     }
-    print("No filename provided\n", .{});
-    return error.NoFilename;
+    if (filenames.items.len == 0) {
+        debugPrint("No filename provided\n", .{});
+        return error.NoFilename;
+    }
+    return try filenames.toOwnedSlice(allocator);
 }
 
 fn parseFlags(arg:[:0]const u8, config: *Config) !void {
@@ -69,14 +121,14 @@ fn parseFlags(arg:[:0]const u8, config: *Config) !void {
             'm' => config.chars = true,
             'l' => config.lines = true,
             else => {
-                print("Invalid flag: -{c}\n", .{char});
+                debugPrint("Invalid flag: -{c}\n", .{char});
                 return error.InvalidFlag;
             }
         }
     }
 }
 
-fn countWord(buffer: *[bufferSize]u8) usize {
+fn countWord(buffer:[]u8) usize {
     var i:usize = 0;
     var count:usize = 0;
     var word:bool = false;
@@ -90,10 +142,10 @@ fn countWord(buffer: *[bufferSize]u8) usize {
             }
         }
     }
-    return count - 1;
+    return count;
 }
 
-fn countNewline(buffer: *[bufferSize]u8) usize {
+fn countNewline(buffer:[]u8) usize {
     var i: usize = 0;
     var count: usize = 0;
     while (i < buffer.len) : (i += 1) {
