@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 6.6, "left": 310, "attrs": {} },
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-servo",
+      "id": "servo1",
+      "top": 188.2,
+      "left": 375.4,
+      "rotate": 90,
+      "attrs": { "horn": "double" }
+    }
+  ],
+  "connections": [
+    [ "uno:4", "bb1:13b.i", "blue", [ "v0" ] ],
+    [ "servo1:GND", "bb1:15b.j", "", [ "$bb" ] ],
+    [ "servo1:V+", "bb1:14b.j", "", [ "$bb" ] ],
+    [ "servo1:PWM", "bb1:13b.j", "", [ "$bb" ] ],
+    [ "bb1:14b.h", "bb1:bp.13", "red", [ "v0" ] ],
+    [ "servo1:GND", "bb1:bn.12", "black", [ "v0" ] ],
+    [ "bb1:bp.25", "bb1:tp.25", "red", [ "v0" ] ],
+    [ "bb1:bn.24", "bb1:tn.24", "black", [ "v0" ] ],
+    [ "uno:GND.2", "bb1:bn.1", "black", [ "v48.5", "h176.1" ] ],
+    [ "uno:5V", "bb1:bp.2", "red", [ "v58.1", "h195.2" ] ]
+  ],
+  "dependencies": {}
+}
