@@ -8,12 +8,14 @@ const Flag:type = enum {
     lineMaxWidth,
     words,
 };
+// this doesn't do anything. it's just a reference
 
 const Config:type = struct {
     bytes:bool = false,
     chars:bool = false,
     lines:bool = false,
 };
+//TODO: process the config into actual instructions
 
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
@@ -41,6 +43,9 @@ pub fn main(init: std.process.Init) !void {
 
         const buffer = try allocator.alloc(u8, stat.size);
         defer allocator.free(buffer);
+
+        // this line writes the contents of the file to the buffer although i'm not sure how.
+        // i copied it off reddit OMEGALUL
         _ = try file.readPositionalAll(io, buffer, 0);
 
         const newlineCount:usize = countNewline(buffer);
@@ -55,7 +60,6 @@ pub fn main(init: std.process.Init) !void {
         max_words               = @max(max_words, digitCount(wordCount));
         max_bytes               = @max(max_bytes, digitCount(bytes));
         max_filename            = @max(max_filename, filename.len);
-        //TODO: process the config into actual instructions
         
         if (guide) {
             try stdout.print("newlines | words | bytes | filename\n", .{});
