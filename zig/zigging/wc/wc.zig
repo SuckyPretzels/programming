@@ -40,6 +40,10 @@ pub fn main(init: std.process.Init) !void {
         try printHelp(stdout);
         return;
     }
+    if (filenames.len == 0) {
+        debugPrint("No filename provided\n", .{});
+        return error.NoFilename;
+    }
 
     var totalNewlines:usize = 0;
     var totalWords:usize    = 0;
@@ -202,8 +206,9 @@ fn printHelp(writer:anytype) !void {
             \\             display this help and exit
             \\
             \\This is a program i wrote in zig to help learn both zig and low level programming.
-            \\it is an attempt to replicate the standard wc binary from GNU coreutils.\n
+            \\it is an attempt to replicate the standard wc binary from GNU coreutils.
             , .{});
+    try writer.print("\n", .{});
 }
 
 fn digitCount(n: usize) usize {
@@ -223,10 +228,6 @@ fn readArgs(allocator: std.mem.Allocator, args:[]const [:0]const u8, config: *Co
         } else {
             try filenames.append(allocator, arg);
         }
-    }
-    if (filenames.items.len == 0) {
-        debugPrint("No filename provided\n", .{});
-        return error.NoFilename;
     }
     return try filenames.toOwnedSlice(allocator);
 }
