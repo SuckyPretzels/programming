@@ -1,6 +1,7 @@
 const std = @import("std");
 const debugPrint = std.debug.print;
 
+// this doesn't do anything. it's just a reference
 const Flag:type = enum {
     bytes,
     chars,
@@ -8,14 +9,14 @@ const Flag:type = enum {
     lineMaxWidth,
     words,
 };
-// this doesn't do anything. it's just a reference
 
-const Config:type = struct {
-    bytes:bool = false,
-    chars:bool = false,
-    lines:bool = false,
-};
 //TODO: process the config into actual instructions
+const Config:type = struct {
+    lines:bool = false,
+    words:bool = false,
+    chars:bool = false,
+    bytes:bool = false,
+};
 
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
@@ -23,7 +24,7 @@ pub fn main(init: std.process.Init) !void {
     var stdout_writer = std.Io.File.stdout().writer(io, &.{});
     var stdout = &stdout_writer.interface;
     var config:Config = Config{};
-    var guide = true;
+    var header = true;
 
     var args = try init.minimal.args.toSlice(allocator);
     args = args[1..];
@@ -34,6 +35,17 @@ pub fn main(init: std.process.Init) !void {
     }
 
     const filenames = try readArgs(allocator, args, &config);
+
+    var totalNewlines:usize = 0;
+    var totalWords:usize    = 0;
+    var totalBytes:usize    = 0;
+    var totalChars:usize    = 0;
+
+    var max_newlines: usize = "newlines".len;
+    var max_words:    usize = "words".len;
+    var max_chars:    usize = "chars".len;
+    var max_bytes:    usize = "bytes".len;
+    var max_filename: usize = "filename".len;
 
     for (filenames) |filename| {
         var file = try std.Io.Dir.cwd().openFile(io, filename, .{});
@@ -48,48 +60,135 @@ pub fn main(init: std.process.Init) !void {
         // i copied it off reddit OMEGALUL
         _ = try file.readPositionalAll(io, buffer, 0);
 
-        const newlineCount:usize = countNewline(buffer);
-        const wordCount:usize    = countWord(buffer);
-        const bytes:u64          = stat.size;
+        const newlines:usize = countNewline(buffer);
+        const words:usize    = countWord(buffer);
+        const chars:usize    = countChars(buffer);
+        const bytes:usize    = stat.size;
 
-        var max_newlines: usize = "newlines".len;
-        var max_words:    usize = "words".len;
-        var max_bytes:    usize = "bytes".len;
-        var max_filename: usize = "filename".len;
-        max_newlines            = @max(max_newlines, digitCount(newlineCount));
-        max_words               = @max(max_words, digitCount(wordCount));
-        max_bytes               = @max(max_bytes, digitCount(bytes));
-        max_filename            = @max(max_filename, filename.len);
+        max_newlines         = @max(max_newlines, digitCount(newlines));
+        max_words            = @max(max_words, digitCount(words));
+        max_chars            = @max(max_chars, digitCount(chars));
+        max_bytes            = @max(max_bytes, digitCount(bytes));
+        max_filename         = @max(max_filename, filename.len);
         
-        if (guide) {
-            try stdout.print("newlines | words | bytes | filename\n", .{});
-            const barSize = max_newlines + max_words + max_bytes + max_filename;
-            var i:usize = 0;
+        if (header) {
+            try printHeader(stdout, &config);
+            try printBar(stdout, max_newlines, max_words, max_chars, max_bytes, max_filename);
 
-            while (i < barSize + 10) : (i += 1) {
-                try stdout.print("—", .{});
-            }
-            try stdout.print("\n", .{});
-
-            guide = false;
+            header = false;
         }
 
-        try printPadded(stdout, newlineCount, max_newlines);
-        try stdout.print(" | ", .{});
-        try printPadded(stdout, wordCount, max_words);
-        try stdout.print(" | ", .{});
-        try printPadded(stdout, bytes, max_bytes);
-        try stdout.print(" | {s}\n", .{filename});
+        var flagged:bool = false;
+        if (config.lines) {
+            try printPadded(stdout, newlines, max_newlines);
+            try stdout.print(" | ", .{});
+            flagged = true;
+        }
+        if (config.words) {
+            try printPadded(stdout, words, max_words);
+            try stdout.print(" | ", .{});
+            flagged = true;
+        }
+        if (config.chars) {
+            try printPadded(stdout, chars, max_chars);
+            try stdout.print(" | ", .{});
+            flagged = true;
+        }
+        if (config.bytes) {
+            try printPadded(stdout, bytes, max_bytes);
+            try stdout.print(" | ", .{});
+            flagged = true;
+        }
+        if (!flagged) {
+            try printPadded(stdout, newlines, max_newlines);
+            try stdout.print(" | ", .{});
+            try printPadded(stdout, words, max_words);
+            try stdout.print(" | ", .{});
+            try printPadded(stdout, bytes, max_bytes);
+        }
+        try stdout.print("{s}\n", .{filename});
+
+        totalNewlines +=newlines;
+        totalWords    +=words;
+        totalBytes    +=bytes;
+        totalChars    +=buffer.len;
     }
+
+    try printBar(stdout, max_newlines, max_words, max_chars, max_bytes, max_filename);
+
+    var flagged:bool = false;
+    if (config.lines) {
+        try printPadded(stdout, totalNewlines, max_newlines);
+        try stdout.print(" | ", .{});
+        flagged = true;
+    }
+    if (config.words) {
+        try printPadded(stdout, totalWords, max_words);
+        try stdout.print(" | ", .{});
+        flagged = true;
+    }
+    if (config.chars) {
+        try printPadded(stdout, totalChars, max_chars);
+        try stdout.print(" | ", .{});
+        flagged = true;
+    }
+    if (config.bytes) {
+        try printPadded(stdout, totalBytes, max_bytes);
+        try stdout.print(" | ", .{});
+        flagged = true;
+    }
+    if (!flagged) {
+        try printPadded(stdout, totalNewlines, max_newlines);
+        try stdout.print(" | ", .{});
+        try printPadded(stdout, totalWords, max_words);
+        try stdout.print(" | ", .{});
+        try printPadded(stdout, totalBytes, max_bytes);
+    }
+    try stdout.print("{s}\n", .{"total"});
+
+}
+
+fn printHeader(writer:anytype, config:*Config) !void {
+    var flagged:bool = false;
+    if (config.lines) {
+        try writer.print("newlines | ", .{});
+        flagged = true;
+    }
+    if (config.words) {
+        try writer.print("words | ", .{});
+        flagged = true;
+    }
+    if (config.chars) {
+        try writer.print("chars | ", .{});
+        flagged = true;
+    }
+    if (config.bytes) {
+        try writer.print("bytes | ", .{});
+        flagged = true;
+    }
+    if (!flagged) {
+        try writer.print("newlines | words | bytes | ", .{});
+    }
+    try writer.print("filename\n", .{});
+}
+
+fn printBar(writer:anytype, max_newlines:usize, max_words:usize, max_chars:usize, max_bytes:usize, max_filename:usize) !void {
+    const barSize = max_newlines + max_words + max_chars + max_bytes + max_filename;
+    var i:usize = 0;
+
+    while (i < barSize + 10) : (i += 1) {
+        try writer.print("—", .{});
+    }
+    try writer.print("\n", .{});
 }
 
 fn printPadded(writer: anytype, value: usize, width: usize) !void {
-    try writer.print("{d}", .{value});
     const digits = digitCount(value);
     var i: usize = digits;
     while (i < width) : (i += 1) {
         try writer.print(" ", .{});
     }
+    try writer.print("{d}", .{value});
 }
 
 fn digitCount(n: usize) usize {
@@ -121,9 +220,10 @@ fn parseFlags(arg:[:0]const u8, config: *Config) !void {
     if (arg.len == 0 or arg[0] != '-') return;
     for (arg[1..]) |char| {
         switch(char) {
-            'c' => config.bytes = true,
-            'm' => config.chars = true,
             'l' => config.lines = true,
+            'w' => config.words = true,
+            'm' => config.chars = true,
+            'c' => config.bytes = true,
             else => {
                 debugPrint("Invalid flag: -{c}\n", .{char});
                 return error.InvalidFlag;
@@ -158,4 +258,12 @@ fn countNewline(buffer:[]u8) usize {
         }
     }
     return count;
+}
+
+fn countChars(buffer:[]u8) usize {
+    var i:usize = 0;
+    while (i < buffer.len) {
+        i += 1;
+    }
+    return i;
 }
