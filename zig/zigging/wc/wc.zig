@@ -10,8 +10,9 @@ const Flag:type = enum {
     words,
 };
 
-//TODO: process the config into actual instructions
+//TODO: process the configs into intructions in a way that isn't retarded.
 const Config:type = struct {
+    help:bool  = false,
     lines:bool = false,
     words:bool = false,
     chars:bool = false,
@@ -30,11 +31,15 @@ pub fn main(init: std.process.Init) !void {
     args = args[1..];
 
     if (args.len < 1) {
-        debugPrint("Usage: wc [flags] [filepath]\n", .{});
+        debugPrint("No filepath provided\n", .{});
         return;
     }
 
     const filenames = try readArgs(allocator, args, &config);
+    if (config.help) {
+        try printHelp(stdout);
+        return;
+    }
 
     var totalNewlines:usize = 0;
     var totalWords:usize    = 0;
@@ -73,8 +78,6 @@ pub fn main(init: std.process.Init) !void {
         
         if (header) {
             try printHeader(stdout, &config);
-            try printBar(stdout, max_newlines, max_words, max_chars, max_bytes, max_filename);
-
             header = false;
         }
 
@@ -105,6 +108,7 @@ pub fn main(init: std.process.Init) !void {
             try printPadded(stdout, words, max_words);
             try stdout.print(" | ", .{});
             try printPadded(stdout, bytes, max_bytes);
+            try stdout.print(" | ", .{});
         }
         try stdout.print("{s}\n", .{filename});
 
@@ -114,38 +118,39 @@ pub fn main(init: std.process.Init) !void {
         totalChars    +=buffer.len;
     }
 
-    try printBar(stdout, max_newlines, max_words, max_chars, max_bytes, max_filename);
-
-    var flagged:bool = false;
-    if (config.lines) {
-        try printPadded(stdout, totalNewlines, max_newlines);
-        try stdout.print(" | ", .{});
-        flagged = true;
+    if (filenames.len > 1) {
+        var flagged:bool = false;
+        if (config.lines) {
+            try printPadded(stdout, totalNewlines, max_newlines);
+            try stdout.print(" | ", .{});
+            flagged = true;
+        }
+        if (config.words) {
+            try printPadded(stdout, totalWords, max_words);
+            try stdout.print(" | ", .{});
+            flagged = true;
+        }
+        if (config.chars) {
+            try printPadded(stdout, totalChars, max_chars);
+            try stdout.print(" | ", .{});
+            flagged = true;
+        }
+        if (config.bytes) {
+            try printPadded(stdout, totalBytes, max_bytes);
+            try stdout.print(" | ", .{});
+            flagged = true;
+        }
+        if (!flagged) {
+            try printPadded(stdout, totalNewlines, max_newlines);
+            try stdout.print(" | ", .{});
+            try printPadded(stdout, totalWords, max_words);
+            try stdout.print(" | ", .{});
+            try printPadded(stdout, totalBytes, max_bytes);
+            try stdout.print(" | ", .{});
+        }
+        try stdout.print("{s}\n", .{"total"});
+        
     }
-    if (config.words) {
-        try printPadded(stdout, totalWords, max_words);
-        try stdout.print(" | ", .{});
-        flagged = true;
-    }
-    if (config.chars) {
-        try printPadded(stdout, totalChars, max_chars);
-        try stdout.print(" | ", .{});
-        flagged = true;
-    }
-    if (config.bytes) {
-        try printPadded(stdout, totalBytes, max_bytes);
-        try stdout.print(" | ", .{});
-        flagged = true;
-    }
-    if (!flagged) {
-        try printPadded(stdout, totalNewlines, max_newlines);
-        try stdout.print(" | ", .{});
-        try printPadded(stdout, totalWords, max_words);
-        try stdout.print(" | ", .{});
-        try printPadded(stdout, totalBytes, max_bytes);
-    }
-    try stdout.print("{s}\n", .{"total"});
-
 }
 
 fn printHeader(writer:anytype, config:*Config) !void {
@@ -172,16 +177,6 @@ fn printHeader(writer:anytype, config:*Config) !void {
     try writer.print("filename\n", .{});
 }
 
-fn printBar(writer:anytype, max_newlines:usize, max_words:usize, max_chars:usize, max_bytes:usize, max_filename:usize) !void {
-    const barSize = max_newlines + max_words + max_chars + max_bytes + max_filename;
-    var i:usize = 0;
-
-    while (i < barSize + 10) : (i += 1) {
-        try writer.print("—", .{});
-    }
-    try writer.print("\n", .{});
-}
-
 fn printPadded(writer: anytype, value: usize, width: usize) !void {
     const digits = digitCount(value);
     var i: usize = digits;
@@ -189,6 +184,26 @@ fn printPadded(writer: anytype, value: usize, width: usize) !void {
         try writer.print(" ", .{});
     }
     try writer.print("{d}", .{value});
+}
+
+fn printHelp(writer:anytype) !void {
+    try writer.print(
+        \\Usage: wc [OPTION]... [FILE]...
+            \\Print newline, word, and byte counts for each FILE, and a total line if
+            \\more than one FILE is specified.  A word is a non-zero-length sequence of
+            \\printable characters delimited by white space.
+            \\
+            \\The options below may be used to select which counts are printed, always in
+            \\the following order: newline, word, character, byte.
+            \\  -c,        print the byte counts
+            \\  -m,        print the character counts
+            \\  -l,        print the newline counts
+            \\  -w,        print the word counts
+            \\             display this help and exit
+            \\
+            \\This is a program i wrote in zig to help learn both zig and low level programming.
+            \\it is an attempt to replicate the standard wc binary from GNU coreutils.\n
+            , .{});
 }
 
 fn digitCount(n: usize) usize {
@@ -220,12 +235,14 @@ fn parseFlags(arg:[:0]const u8, config: *Config) !void {
     if (arg.len == 0 or arg[0] != '-') return;
     for (arg[1..]) |char| {
         switch(char) {
+            'h' => config.help  = true,
             'l' => config.lines = true,
             'w' => config.words = true,
             'm' => config.chars = true,
             'c' => config.bytes = true,
             else => {
                 debugPrint("Invalid flag: -{c}\n", .{char});
+                debugPrint("Use 'wc -h' for help\n", .{});
                 return error.InvalidFlag;
             }
         }
